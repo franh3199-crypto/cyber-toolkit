@@ -3,26 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Título y descripción -->
-    <title>Cyber Toolkit | Repositorio de Comandos de Seguridad</title>
-    <meta name="description" content="Tu arsenal personal de comandos y snippets para ciberseguridad. Organiza, busca y copia herramientas de pentesting al instante." />
-    <meta name="keywords" content="ciberseguridad, pentesting, comandos, nmap, hacking ético, toolkit" />
-    
-    <!-- Color del tema para móviles -->
-    <meta name="theme-color" content="#0b0e14" />
+
+    <title>CyberForge | Arsenal de Ciberseguridad</title>
+    <meta name="description" content="Tu arsenal definitivo de comandos para ciberseguridad. Organiza, busca, exporta y comparte herramientas de pentesting." />
+    <meta name="theme-color" content="#08090d" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    
+
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-    
-    <!-- Tailwind CDN (para desarrollo rápido) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Configuración de Tailwind -->
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -31,109 +25,94 @@
             fontFamily: {
               sans: ['Inter', 'system-ui', 'sans-serif'],
               mono: ['JetBrains Mono', 'Menlo', 'monospace'],
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
             },
             colors: {
-              slate: {
-                950: '#0b0e14',
-                900: '#161b22',
-                850: '#1c2128',
-                800: '#21262d',
-                750: '#2d333b',
-              }
+              void: {
+                50: '#08090d',
+                100: '#0c0e14',
+                200: '#12151e',
+                300: '#181c27',
+                400: '#1e2330',
+                500: '#262c3a',
+                600: '#323a4a',
+              },
             },
             animation: {
-              'fade-in': 'fadeIn 0.5s ease-out',
-              'slide-up': 'slideUp 0.4s ease-out',
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-in': 'fadeIn 0.4s ease-out forwards',
+              'slide-up': 'slideUp 0.35s cubic-bezier(0.16,1,0.3,1) forwards',
+              'slide-down': 'slideDown 0.3s cubic-bezier(0.16,1,0.3,1) forwards',
+              'scale-in': 'scaleIn 0.2s ease-out forwards',
+              'float': 'float 8s ease-in-out infinite',
+              'glow': 'glow 4s ease-in-out infinite',
             },
             keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              slideUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              }
-            }
-          }
-        }
+              fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+              slideUp: { '0%': { opacity: '0', transform: 'translateY(16px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+              slideDown: { '0%': { opacity: '0', transform: 'translateY(-8px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+              scaleIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+              float: { '0%,100%': { transform: 'translateY(0) rotate(0deg)' }, '50%': { transform: 'translateY(-20px) rotate(1deg)' } },
+              glow: { '0%,100%': { opacity: '0.4' }, '50%': { opacity: '0.7' } },
+            },
+          },
+        },
       }
     </script>
-    
-    <!-- Estilos adicionales -->
+
     <style>
-      /* Scrollbar personalizada */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #262c3a; border-radius: 999px; }
+      ::-webkit-scrollbar-thumb:hover { background: #323a4a; }
+      ::selection { background: rgba(99, 102, 241, 0.25); color: #a5b4fc; }
+      html { scroll-behavior: smooth; }
+      *:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; border-radius: 8px; }
+
+      .glass { background: rgba(18, 21, 30, 0.7); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); }
+      .glass-solid { background: rgba(18, 21, 30, 0.92); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); }
+
+      .gradient-border { position: relative; }
+      .gradient-border::before {
+        content: ''; position: absolute; inset: 0; padding: 1px; border-radius: inherit;
+        background: linear-gradient(160deg, rgba(99,102,241,0.2), transparent 40%, rgba(6,182,212,0.15), transparent 70%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
       }
-      ::-webkit-scrollbar-track {
-        background: #0b0e14;
+
+      .card-hover { transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+      .card-hover:hover { transform: translateY(-1px); box-shadow: 0 8px 32px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.06); }
+
+      input, textarea, select { transition: all 0.2s ease; }
+      input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        transition: all 0.2s ease;
       }
-      ::-webkit-scrollbar-thumb {
-        background: #2d333b;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #3d444d;
-      }
-      
-      /* Selección de texto */
-      ::selection {
-        background: rgba(8, 145, 178, 0.3);
-        color: #22d3ee;
-      }
-      
-      /* Smooth scroll */
-      html {
-        scroll-behavior: smooth;
-      }
-      
-      /* Focus visible */
-      *:focus-visible {
-        outline: 2px solid #0891b2;
-        outline-offset: 2px;
-      }
-      
-      /* Animación de entrada para elementos */
-      .animate-enter {
-        animation: slideUp 0.4s ease-out forwards;
-      }
-      
-      /* Glassmorphism sutil */
-      .glass {
-        background: rgba(22, 27, 34, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
+      .btn-primary:hover { background: linear-gradient(135deg, #818cf8, #6366f1); box-shadow: 0 8px 24px -4px rgba(99,102,241,0.3); transform: translateY(-1px); }
+      .btn-primary:active { transform: translateY(0); }
     </style>
-    
-    <!-- Icono SVG inline (data URI) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230891b2'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🛡️%3C/text%3E%3C/svg%3E" />
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Ctext x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='monospace' font-weight='bold'%3E⚡%3C/text%3E%3C/svg%3E" />
   </head>
-  
-  <body class="bg-[#0b0e14] text-slate-300 font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-400">
-    <!-- Background decorativo -->
-    <div class="fixed inset-0 pointer-events-none">
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%231c2128\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+
+  <body class="bg-void-50 text-slate-300 font-sans antialiased">
+    <!-- Ambient light -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute -top-[300px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-indigo-500/[0.04] rounded-full blur-[120px] animate-glow"></div>
+      <div class="absolute -bottom-[200px] -left-[200px] w-[600px] h-[600px] bg-cyan-500/[0.03] rounded-full blur-[100px] animate-float"></div>
+      <div class="absolute -bottom-[200px] -right-[200px] w-[500px] h-[500px] bg-violet-500/[0.02] rounded-full blur-[100px] animate-float" style="animation-delay:-4s"></div>
     </div>
 
-    <!-- Root para React -->
     <div id="root" class="relative z-10"></div>
-
-    <!-- Script de Vite (en desarrollo) o tu build -->
     <script type="module" src="/src/main.jsx"></script>
-    
-    <!-- Fallback si no hay JS -->
+
     <noscript>
-      <div class="min-h-screen flex items-center justify-center bg-[#0b0e14] text-slate-300 p-8">
-        <div class="text-center space-y-4">
-          <div class="text-6xl">🛡️</div>
-          <h1 class="text-2xl font-bold text-white">JavaScript requerido</h1>
-          <p>Cyber Toolkit necesita JavaScript para funcionar. Por favor habilítalo en tu navegador.</p>
+      <div class="min-h-screen flex items-center justify-center bg-void-50 text-slate-300 p-8">
+        <div class="text-center space-y-4 max-w-md">
+          <div class="text-6xl">⚡</div>
+          <h1 class="text-2xl font-bold text-white font-display">JavaScript Requerido</h1>
+          <p class="text-slate-500">CyberForge necesita JavaScript para funcionar.</p>
         </div>
       </div>
     </noscript>
