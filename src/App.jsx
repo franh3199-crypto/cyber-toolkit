@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useMemo, useCallback, createContext, useContext } from 'react'
 import './themes.css'
 import { TRANSLATIONS, getSavedLang, saveLang } from './i18n.js'
+import SecurityFeedLive from './SecurityFeedLive.jsx'
 
 // ════════════════════════════════════════════════════
 // LANGUAGE CONTEXT
 // ════════════════════════════════════════════════════
 const LangContext = createContext({ lang: 'es', t: TRANSLATIONS.es, setLang: () => {} })
-function useLang() { return useContext(LangContext) }
+export function useLang() { return useContext(LangContext) }
 
 // ════════════════════════════════════════════════════
 // STORAGE
@@ -56,7 +57,7 @@ const THEMES_LIST = [
 ]
 
 // ════════════════════════════════════════════════════
-// TIME AGO (respects language)
+// TIME AGO
 // ════════════════════════════════════════════════════
 function useTimeAgo() {
   const { t } = useLang()
@@ -141,6 +142,7 @@ const I = {
   code: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>,
   save: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/></svg>,
   globe: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>,
+  live: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>,
 }
 
 // ════════════════════════════════════════════════════
@@ -251,15 +253,15 @@ function AuthScreen({ onLogin }) {
 }
 
 // ════════════════════════════════════════════════════
-// FEED HOOK
+// FEED HOOK (original — kept for legacy "Security Feed" tab)
 // ════════════════════════════════════════════════════
 const FEED_URLS = [
   { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://feeds.feedburner.com/TheHackersNews'), source: 'The Hacker News' },
   { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.bleepingcomputer.com/feed/'), source: 'BleepingComputer' },
   { url: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://nvd.nist.gov/feeds/xml/cve/misc/nvd-rss.xml'), source: 'NVD / CVE' },
 ]
-const SEV_KW = { CRITICAL: ['critical','rce','remote code execution','zero-day','0-day','actively exploited','emergency','cvss 9','cvss 10'], HIGH: ['high','vulnerability','exploit','cve-','patch','flaw','breach','ransomware','malware','attack','backdoor','trojan'], MEDIUM: ['medium','update','advisory','warning','phishing','scam'] }
-function detectSev(title, desc) { const x = ((title||'') + ' ' + (desc||'')).toLowerCase(); if (SEV_KW.CRITICAL.some(k => x.includes(k))) return 'CRITICAL'; if (SEV_KW.HIGH.some(k => x.includes(k))) return 'HIGH'; if (SEV_KW.MEDIUM.some(k => x.includes(k))) return 'MEDIUM'; return 'INFO' }
+const SEV_KW_LEGACY = { CRITICAL: ['critical','rce','remote code execution','zero-day','0-day','actively exploited','emergency','cvss 9','cvss 10'], HIGH: ['high','vulnerability','exploit','cve-','patch','flaw','breach','ransomware','malware','attack','backdoor','trojan'], MEDIUM: ['medium','update','advisory','warning','phishing','scam'] }
+function detectSev(title, desc) { const x = ((title||'') + ' ' + (desc||'')).toLowerCase(); if (SEV_KW_LEGACY.CRITICAL.some(k => x.includes(k))) return 'CRITICAL'; if (SEV_KW_LEGACY.HIGH.some(k => x.includes(k))) return 'HIGH'; if (SEV_KW_LEGACY.MEDIUM.some(k => x.includes(k))) return 'MEDIUM'; return 'INFO' }
 
 function useFeedData() {
   const [items, setItems] = useState(() => getFeedCache().items)
@@ -302,7 +304,7 @@ function useFeedData() {
 }
 
 // ════════════════════════════════════════════════════
-// SECURITY FEED (30+ results, skeleton, timeAgo)
+// SECURITY FEED (original tab — unchanged)
 // ════════════════════════════════════════════════════
 function SecurityFeed({ feedData, username }) {
   const { t } = useLang()
@@ -372,7 +374,7 @@ function SecurityFeed({ feedData, username }) {
 }
 
 // ════════════════════════════════════════════════════
-// COMMANDS — loads from commands.json + Google fallback
+// COMMANDS
 // ════════════════════════════════════════════════════
 function CommandsPanel({ username, commandsDB }) {
   const { t } = useLang()
@@ -434,7 +436,7 @@ function CommandsPanel({ username, commandsDB }) {
                     <h3 className="text-sm font-bold" style={{ color: 'var(--ct-text-heading)' }}>{cmd.name}</h3>
                     <span className="ct-badge mt-1 capitalize" style={{ background: 'var(--ct-accent-10)', borderColor: 'var(--ct-border)', color: 'var(--ct-text-muted)' }}>{cmd.category}</span>
                   </div>
-                  <button onClick={() => saveCmd(cmd)} className={`p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100 ${saved ? '' : ''}`} style={{ color: saved ? 'var(--ct-warning)' : 'var(--ct-text-muted)' }}>{saved ? I.star : I.starO}</button>
+                  <button onClick={() => saveCmd(cmd)} className={`p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100`} style={{ color: saved ? 'var(--ct-warning)' : 'var(--ct-text-muted)' }}>{saved ? I.star : I.starO}</button>
                 </div>
                 {cmd.description && <p className="text-xs" style={{ color: 'var(--ct-text-muted)' }}>{cmd.description}</p>}
                 <div className="relative group/code">
@@ -541,7 +543,7 @@ function SavedCommandsPanel({ username }) {
 }
 
 // ════════════════════════════════════════════════════
-// NOTES — full system preserved
+// NOTES
 // ════════════════════════════════════════════════════
 function NotesSystem({ username }) {
   const { t } = useLang()
@@ -832,7 +834,7 @@ function GlobalSearch({ username, commandsDB, onNavigate, isOpen, onClose }) {
 }
 
 // ════════════════════════════════════════════════════
-// SETTINGS — with themes + language
+// SETTINGS
 // ════════════════════════════════════════════════════
 function SettingsPanel({ username, onLogout }) {
   const { t, lang, setLang } = useLang()
@@ -857,7 +859,6 @@ function SettingsPanel({ username, onLogout }) {
   return (
     <div className="max-w-2xl mx-auto space-y-6 ct-fade-in p-4">
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
-
       <div className="ct-card p-6">
         <h3 className="text-base font-bold mb-4 font-display flex items-center gap-2" style={{ color: 'var(--ct-text-heading)' }}>{I.shield} {t.profile}</h3>
         <div className="flex items-center gap-4 mb-4">
@@ -867,8 +868,6 @@ function SettingsPanel({ username, onLogout }) {
         <button onClick={() => setChangingPass(!changingPass)} className="ct-btn ct-btn-accent">{t.changePassword}</button>
         {changingPass && <div className="space-y-2 p-4 rounded-xl mt-3" style={{ background: 'var(--ct-bg)', border: '1px solid var(--ct-border)' }}><input type="password" value={oldPass} onChange={e => setOldPass(e.target.value)} placeholder={t.currentPassword} className="w-full ct-input px-3 py-2 text-sm font-mono" /><input type="password" value={changeNewPass} onChange={e => setChangeNewPass(e.target.value)} placeholder={t.newPassword} className="w-full ct-input px-3 py-2 text-sm font-mono" /><div className="flex gap-2"><button onClick={changePassword} className="ct-btn ct-btn-green">{I.check} {t.save}</button><button onClick={() => setChangingPass(false)} className="ct-btn" style={{ borderColor: 'var(--ct-border)', color: 'var(--ct-text-muted)' }}>{t.cancel}</button></div></div>}
       </div>
-
-      {/* THEMES */}
       <div className="ct-card p-6">
         <h3 className="text-base font-bold mb-4 font-display" style={{ color: 'var(--ct-text-heading)' }}>{t.themes}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -881,8 +880,6 @@ function SettingsPanel({ username, onLogout }) {
           ))}
         </div>
       </div>
-
-      {/* LANGUAGE */}
       <div className="ct-card p-6">
         <h3 className="text-base font-bold mb-4 font-display" style={{ color: 'var(--ct-text-heading)' }}>{t.language}</h3>
         <p className="text-xs font-mono mb-3" style={{ color: 'var(--ct-text-muted)' }}>{t.selectLanguage}</p>
@@ -891,8 +888,6 @@ function SettingsPanel({ username, onLogout }) {
           <button onClick={() => setLang('en')} className={`ct-btn flex-1 justify-center ${lang === 'en' ? 'ct-btn-accent' : ''}`} style={lang !== 'en' ? { borderColor: 'var(--ct-border)', color: 'var(--ct-text-muted)' } : {}}>🇺🇸 {t.english}</button>
         </div>
       </div>
-
-      {/* BACKUP */}
       <div className="ct-card p-6">
         <h3 className="text-base font-bold mb-4 font-display" style={{ color: 'var(--ct-text-heading)' }}>{t.backup}</h3>
         <p className="text-xs font-mono mb-4" style={{ color: 'var(--ct-text-muted)' }}>{t.backupDesc}</p>
@@ -901,8 +896,6 @@ function SettingsPanel({ username, onLogout }) {
           <label className="ct-btn ct-btn-green cursor-pointer">{I.upload} {t.importBackup}<input type="file" accept=".json" onChange={importFullBackup} className="hidden" /></label>
         </div>
       </div>
-
-      {/* CREATE ACCOUNT */}
       <div className="ct-card p-6">
         <h3 className="text-base font-bold mb-4 font-display" style={{ color: 'var(--ct-text-heading)' }}>{t.createNewAccount}</h3>
         <div className="grid grid-cols-2 gap-3">
@@ -911,8 +904,6 @@ function SettingsPanel({ username, onLogout }) {
         </div>
         <button onClick={createAccount} className="ct-btn ct-btn-green mt-3">{I.plus} {t.createAccount}</button>
       </div>
-
-      {/* DANGER */}
       <div className="ct-card p-6" style={{ borderColor: 'var(--ct-danger-25)' }}>
         <h3 className="text-base font-bold mb-4 font-display" style={{ color: 'var(--ct-danger)' }}>{t.dangerZone}</h3>
         <div className="flex gap-3">
@@ -947,7 +938,7 @@ function AlertBanner({ alerts, onDismiss }) {
 // MAIN DASHBOARD
 // ════════════════════════════════════════════════════
 function DashboardApp({ session, onLogout }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -961,6 +952,7 @@ function DashboardApp({ session, onLogout }) {
   const tabs = [
     { key: 'dashboard', label: t.dashboard, icon: I.dashboard },
     { key: 'feed', label: t.securityFeed, icon: I.rss },
+    { key: 'livefeed', label: t.liveFeed, icon: I.live },
     { key: 'commands', label: t.commands, icon: I.code },
     { key: 'saved', label: t.savedCmds, icon: I.save },
     { key: 'notes', label: t.notes, icon: I.note },
@@ -1011,6 +1003,7 @@ function DashboardApp({ session, onLogout }) {
           <div className="flex-1 overflow-y-auto">
             {activeTab === 'dashboard' && <div className="max-w-5xl mx-auto p-4 lg:p-6"><DashboardPanel username={session.username} feedData={feedData} setActiveTab={setActiveTab} commandsDB={commandsDB} /></div>}
             {activeTab === 'feed' && <div className="max-w-4xl mx-auto p-4 lg:p-6"><SecurityFeed feedData={feedData} username={session.username} /></div>}
+            {activeTab === 'livefeed' && <SecurityFeedLive lang={lang} t={t} />}
             {activeTab === 'commands' && <div className="max-w-4xl mx-auto p-4 lg:p-6"><CommandsPanel username={session.username} commandsDB={commandsDB} /></div>}
             {activeTab === 'saved' && <div className="max-w-4xl mx-auto p-4 lg:p-6"><SavedCommandsPanel username={session.username} /></div>}
             {activeTab === 'notes' && <NotesSystem username={session.username} />}

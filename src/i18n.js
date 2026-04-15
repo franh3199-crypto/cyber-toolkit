@@ -18,6 +18,7 @@ export const TRANSLATIONS = {
     // Nav
     dashboard: 'Dashboard',
     securityFeed: 'Security Feed',
+    liveFeed: 'Feed Live',
     commands: 'Comandos',
     savedCmds: 'Cmds Guardados',
     notes: 'Notas',
@@ -187,6 +188,7 @@ export const TRANSLATIONS = {
 
     dashboard: 'Dashboard',
     securityFeed: 'Security Feed',
+    liveFeed: 'Feed Live',
     commands: 'Commands',
     savedCmds: 'Saved Cmds',
     notes: 'Notes',
